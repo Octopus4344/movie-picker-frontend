@@ -1,2 +1,5 @@
-/* eslint-disable unicorn/no-empty-file, import/consistent-type-specifier-style */
-// Here implement the types used in the app
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+}
