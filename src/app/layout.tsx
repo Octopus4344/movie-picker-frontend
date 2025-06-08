@@ -1,13 +1,13 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { UserProvider } from "@/context/user-context";
 import { QueryProvider } from "@/lib/query-client";
 
 import "./globals.css";
 
-const space_grotesk = Space_Grotesk({
+const space_grotesk = Inter({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
