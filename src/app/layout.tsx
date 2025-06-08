@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 
+import { UserProvider } from "@/context/user-context";
 import { QueryProvider } from "@/lib/query-client";
 
 import "./globals.css";
@@ -23,9 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryProvider>
-        <body className={`${space_grotesk.variable} font-sans antialiased`}>
-          {children}
-        </body>
+        <UserProvider>
+          <body className={`${space_grotesk.variable} font-sans antialiased`}>
+            {children}
+          </body>
+        </UserProvider>
       </QueryProvider>
     </html>
   );

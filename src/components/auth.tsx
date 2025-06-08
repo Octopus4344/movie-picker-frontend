@@ -1,24 +1,47 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useUser } from "@/context/user-context";
+import { fetchData } from "@/lib/api";
+import { User } from "@/lib/types";
+
+interface LoginInput {
+  email: string;
+  password: string;
+}
 
 export function Auth() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+  const { setUser: setContextUser } = useUser();
+  const router = useRouter();
 
-  const handleSubmit = () => {
-    alert(
-      "Login functionality is not implemented yet. Email: " +
-        user.email +
-        ", Password: " +
-        user.password,
-    );
+  const mutation = useMutation<User, Error, LoginInput>({
+    mutationFn: async (credentials: { email: string; password: string }) => {
+      return await fetchData("auth/login/", "POST", {
+        body: JSON.stringify(credentials),
+      });
+    },
+    onSuccess: (data: User) => {
+      setContextUser(data);
+      router.push("/");
+    },
+    onError: (error: any) => {
+      alert(error.message || "Something went wrong");
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    mutation.mutate(user);
   };
 
   return (

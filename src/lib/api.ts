@@ -5,6 +5,7 @@ export async function fetchData(
   method: "POST" | "PUT" | "DELETE" | "GET" = "POST",
   options?: RequestInit,
   apiURL?: string,
+  token?: string | null,
 ) {
   const url = apiURL || NEXT_PUBLIC_API_URL;
   const response = await fetch(`${url}/${endpoint}`, {
@@ -13,30 +14,22 @@ export async function fetchData(
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "include",
+    ...(token && { Authorization: `Bearer ${token}` }),
   });
   const contentType = response.headers.get("Content-Type") || "";
 
   if (!response.ok) {
-    let errorData: any;
+    let errorDataToThrow: any;
 
     if (contentType.includes("application/json")) {
-      errorData = await response.json();
+      errorDataToThrow = await response.json();
     } else {
       const textError = await response.text();
-      errorData = { message: textError };
-      console.log(errorData);
+      errorDataToThrow = { detail: textError, message: textError };
+      console.log("API Error (Non-JSON):", errorDataToThrow);
     }
-    if (
-      (response.status === 400 || response.status === 422) &&
-      errorData.errors
-    ) {
-      throw {
-        validationError: errorData.errors,
-      };
-    }
-
-    throw new Error(errorData.message || response.statusText);
+    // Throw the parsed JSON object or the constructed error object directly
+    throw errorDataToThrow;
   }
 
   if (contentType.includes("application/json")) {

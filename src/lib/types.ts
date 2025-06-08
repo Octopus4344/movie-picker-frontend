@@ -1,5 +1,11 @@
 export interface User {
-  id: string;
-  username: string;
-  email: string;
+  access: string;
+  refresh: string;
+  user: {
+    pk: number;
+    email: string;
+    first_name: string;
+    last_name: string;
+    username: string | null;
+  };
 }
