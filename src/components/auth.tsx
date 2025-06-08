@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import GoogleButton from "@/app/login/components/google-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/context/user-context";
@@ -65,6 +66,7 @@ export function Auth() {
           value={user.email}
           onChange={(event) => handleInputChange(event, "email")}
           className="rounded-xl p-6 text-white"
+          required
         />
         <Input
           type="password"
@@ -72,7 +74,9 @@ export function Auth() {
           value={user.password}
           onChange={(event) => handleInputChange(event, "password")}
           className="rounded-xl p-6 text-white"
+          required
         />
+        <GoogleButton />
         <Button
           onSubmit={handleSubmit}
           type="submit"
