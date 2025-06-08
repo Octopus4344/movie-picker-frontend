@@ -4,9 +4,14 @@ const useLocalStorage = <T,>(key: string, defaultValue: T) => {
   const [value, setValue] = React.useState<T>(defaultValue);
   const [isLoading, setIsLoading] = React.useState(true);
   React.useEffect(() => {
-    const itemFromStorage = localStorage.getItem(key);
-    if (itemFromStorage) {
-      setValue(JSON.parse(itemFromStorage));
+    const item = window.localStorage.getItem(key);
+    if (item !== null && item !== undefined && item !== "") {
+      try {
+        setValue(JSON.parse(item) as T);
+      } catch (error) {
+        console.warn(`Error parsing localStorage key "${key}":`, error);
+        setValue(defaultValue);
+      }
     } else {
       setValue(defaultValue);
     }

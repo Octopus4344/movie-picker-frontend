@@ -14,18 +14,18 @@ export function ProtectedRoute(props: Props) {
   const { user, isLoading } = useUser();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
+    if (!isLoading && !user) {
+      router.replace("/login");
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, router]);
 
-  //suspensea tez mozna zrobic ladniejszego
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  return <>{props.children}</>;
+  if (!user) {
+    return null;
+  }
+
+  return props.children;
 }

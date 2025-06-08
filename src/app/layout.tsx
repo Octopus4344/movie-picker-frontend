@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 
@@ -24,11 +25,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <QueryProvider>
-        <UserProvider>
-          <body className={`${space_grotesk.variable} font-sans antialiased`}>
-            {children}
-          </body>
-        </UserProvider>
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+        >
+          <UserProvider>
+            <body className={`${space_grotesk.variable} font-sans antialiased`}>
+              {children}
+            </body>
+          </UserProvider>
+        </GoogleOAuthProvider>
       </QueryProvider>
     </html>
   );

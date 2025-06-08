@@ -7,16 +7,16 @@ export async function fetchData(
   apiURL?: string,
   token?: string | null,
 ) {
-  const url = apiURL || NEXT_PUBLIC_API_URL;
+  const url = apiURL ?? NEXT_PUBLIC_API_URL;
   const response = await fetch(`${url}/${endpoint}`, {
-    method: method,
+    method,
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
-    ...(token && { Authorization: `Bearer ${token}` }),
   });
-  const contentType = response.headers.get("Content-Type") || "";
+  const contentType = response.headers.get("Content-Type") ?? "";
 
   if (!response.ok) {
     let errorDataToThrow: any;
@@ -26,16 +26,18 @@ export async function fetchData(
     } else {
       const textError = await response.text();
       errorDataToThrow = { detail: textError, message: textError };
-      console.log("API Error (Non-JSON):", errorDataToThrow);
+      console.warn("API Error (Non-JSON):", errorDataToThrow);
     }
-    // Throw the parsed JSON object or the constructed error object directly
     throw errorDataToThrow;
   }
 
   if (contentType.includes("application/json")) {
-    return await response.json();
-  } else if (response.statusText === "204") return null;
-  else if (contentType.includes("text/")) {
-    return await response.text();
-  } else return response.blob();
+    return response.json();
+  } else if (response.status === 204) {
+    return null;
+  } else if (contentType.includes("text/")) {
+    return response.text();
+  } else {
+    return response.blob();
+  }
 }

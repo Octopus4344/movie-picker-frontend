@@ -3,13 +3,13 @@
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/context/user-context";
 import { fetchData } from "@/lib/api";
-import { User } from "@/lib/types";
+import type { User } from "@/lib/types";
 
 interface LoginInput {
   username: string;
@@ -45,7 +45,7 @@ export function Auth() {
       password1: string;
       password2: string;
     }) => {
-      return await fetchData("auth/registration/", "POST", {
+      return fetchData("auth/registration/", "POST", {
         body: JSON.stringify(credentials),
       });
     },
@@ -53,22 +53,30 @@ export function Auth() {
       setContextUser(data);
       router.push("/");
     },
-    onError: (error: any) => {
-      console.log(error);
+    onError: (error: Error | ApiError) => {
+      console.warn("Mutation onError:", error);
       const apiError = error as ApiError;
       if (apiError.non_field_errors && apiError.non_field_errors.length > 0) {
         alert(apiError.non_field_errors[0]);
         setFieldErrors({});
       } else {
         const newFieldErrors: Partial<ApiError> = {};
-        if (apiError.username) newFieldErrors.username = apiError.username;
-        if (apiError.email) newFieldErrors.email = apiError.email;
-        if (apiError.password1) newFieldErrors.password1 = apiError.password1;
-        if (apiError.password2) newFieldErrors.password2 = apiError.password2;
+        if (apiError.username && apiError.username.length > 0) {
+          newFieldErrors.username = apiError.username;
+        }
+        if (apiError.email && apiError.email.length > 0) {
+          newFieldErrors.email = apiError.email;
+        }
+        if (apiError.password1 && apiError.password1.length > 0) {
+          newFieldErrors.password1 = apiError.password1;
+        }
+        if (apiError.password2 && apiError.password2.length > 0) {
+          newFieldErrors.password2 = apiError.password2;
+        }
 
         if (Object.keys(newFieldErrors).length > 0) {
           setFieldErrors(newFieldErrors);
-        } else if (apiError.detail) {
+        } else if (apiError.detail && apiError.detail.length > 0) {
           alert(apiError.detail);
           setFieldErrors({});
         } else {
@@ -81,21 +89,24 @@ export function Auth() {
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     setFieldErrors({}); // Clear previous errors
     mutation.mutate(user);
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>,
     fieldName: keyof LoginInput,
   ) => {
-    const { value } = e.currentTarget;
-    setUser((prev) => ({ ...prev, [fieldName]: value }));
+    const { value } = event.currentTarget;
+    setUser((previousUser) => ({ ...previousUser, [fieldName]: value }));
     // Clear error for this field when user starts typing
-    if (fieldErrors[fieldName]) {
-      setFieldErrors((prev) => ({ ...prev, [fieldName]: undefined }));
+    if (fieldErrors[fieldName] && fieldErrors[fieldName]?.length) {
+      setFieldErrors((previousErrors) => ({
+        ...previousErrors,
+        [fieldName]: undefined,
+      }));
     }
   };
 
@@ -110,64 +121,74 @@ export function Auth() {
           type="text"
           placeholder="Username"
           value={user.username}
-          onChange={(e) => {
-            handleInputChange(e, "username");
+          onChange={(event) => {
+            handleInputChange(event, "username");
           }}
           required={true}
           className="rounded-xl p-6 text-white"
         />
         {fieldErrors.username &&
-          fieldErrors.username.map((err, index) => (
-            <p key={index} className="text-sm text-red-500">
-              {err}
+          fieldErrors.username.length > 0 &&
+          fieldErrors.username.map((errorText, index) => (
+            <p key={`username-error-${index}`} className="text-sm text-red-500">
+              {errorText}
             </p>
           ))}
         <Input
           type="email"
           placeholder="Email"
           value={user.email}
-          onChange={(e) => {
-            handleInputChange(e, "email");
+          onChange={(event) => {
+            handleInputChange(event, "email");
           }}
           required={true}
           className="rounded-xl p-6 text-white"
         />
         {fieldErrors.email &&
-          fieldErrors.email.map((err, index) => (
-            <p key={index} className="text-sm text-red-500">
-              {err}
+          fieldErrors.email.length > 0 &&
+          fieldErrors.email.map((errorText, index) => (
+            <p key={`email-error-${index}`} className="text-sm text-red-500">
+              {errorText}
             </p>
           ))}
         <Input
           type="password"
           placeholder="Password"
           value={user.password1}
-          onChange={(e) => {
-            handleInputChange(e, "password1");
+          onChange={(event) => {
+            handleInputChange(event, "password1");
           }}
           className="rounded-xl p-6 text-white"
           required={true}
         />
         {fieldErrors.password1 &&
-          fieldErrors.password1.map((err, index) => (
-            <p key={index} className="text-sm text-red-500">
-              {err}
+          fieldErrors.password1.length > 0 &&
+          fieldErrors.password1.map((errorText, index) => (
+            <p
+              key={`password1-error-${index}`}
+              className="text-sm text-red-500"
+            >
+              {errorText}
             </p>
           ))}
         <Input
           type="password"
           placeholder="Repeat Password"
           value={user.password2}
-          onChange={(e) => {
-            handleInputChange(e, "password2");
+          onChange={(event) => {
+            handleInputChange(event, "password2");
           }}
           className="rounded-xl p-6 text-white"
           required={true}
         />
         {fieldErrors.password2 &&
-          fieldErrors.password2.map((err, index) => (
-            <p key={index} className="text-sm text-red-500">
-              {err}
+          fieldErrors.password2.length > 0 &&
+          fieldErrors.password2.map((errorText, index) => (
+            <p
+              key={`password2-error-${index}`}
+              className="text-sm text-red-500"
+            >
+              {errorText}
             </p>
           ))}
         <Button

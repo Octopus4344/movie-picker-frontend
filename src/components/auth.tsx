@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/context/user-context";
 import { fetchData } from "@/lib/api";
-import { User } from "@/lib/types";
+import type { User } from "@/lib/types";
 
 interface LoginInput {
   email: string;
@@ -25,8 +25,8 @@ export function Auth() {
   const router = useRouter();
 
   const mutation = useMutation<User, Error, LoginInput>({
-    mutationFn: async (credentials: { email: string; password: string }) => {
-      return await fetchData("auth/login/", "POST", {
+    mutationFn: async (credentials: LoginInput) => {
+      return fetchData("auth/login/", "POST", {
         body: JSON.stringify(credentials),
       });
     },
@@ -35,13 +35,21 @@ export function Auth() {
       router.push("/");
     },
     onError: (error: any) => {
-      alert(error.message || "Something went wrong");
+      alert(error.message || "Login failed. Please try again.");
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     mutation.mutate(user);
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    fieldName: keyof Omit<typeof user, "id" | "username">,
+  ) => {
+    const inputValue = event.currentTarget.value;
+    setUser((previousUser) => ({ ...previousUser, [fieldName]: inputValue }));
   };
 
   return (
@@ -55,23 +63,15 @@ export function Auth() {
           type="email"
           placeholder="Email"
           value={user.email}
-          onChange={(e) => {
-            const val = e.currentTarget.value;
-            setUser((prev) => ({ ...prev, email: val }));
-          }}
-          required={true}
+          onChange={(event) => handleInputChange(event, "email")}
           className="rounded-xl p-6 text-white"
         />
         <Input
           type="password"
           placeholder="Password"
           value={user.password}
-          onChange={(e) => {
-            const val = e.currentTarget.value;
-            setUser((prev) => ({ ...prev, password: val }));
-          }}
+          onChange={(event) => handleInputChange(event, "password")}
           className="rounded-xl p-6 text-white"
-          required={true}
         />
         <Button
           onSubmit={handleSubmit}

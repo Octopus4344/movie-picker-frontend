@@ -1,10 +1,11 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { fetchData } from "@/lib/api";
-import { User } from "@/lib/types";
+import type { User } from "@/lib/types";
 
 interface UserContextInterface {
   user: User | null;
@@ -18,7 +19,7 @@ const UserContext = createContext<UserContextInterface | undefined>(undefined);
 
 export function useUser() {
   const context = useContext(UserContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useUser must be used within the context");
   }
   return context;
@@ -31,15 +32,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (storedUser !== null && storedUser !== undefined && storedUser !== "") {
+      try {
+        setUser(JSON.parse(storedUser) as User | null);
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+        setUser(null);
+      }
     }
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user !== null && user !== undefined) {
       localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
     }
   }, [user]);
 
@@ -49,13 +57,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logoutMutation = useMutation({
-    mutationFn: () => fetchData("user/logout", "DELETE"),
+    mutationFn: async () => fetchData("user/logout", "DELETE"),
     onSuccess: () => {
       clearUser();
       queryClient.clear();
     },
-    onError: () => {
-      console.error("Error logging out");
+    onError: (error) => {
+      console.error("Error logging out:", error);
     },
   });
 
@@ -65,7 +73,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, clearUser, logout, isLoading }}
+      value={{
+        user,
+        setUser: setUser as Dispatch<SetStateAction<User | null>>,
+        clearUser,
+        logout,
+        isLoading,
+      }}
     >
       {children}
     </UserContext.Provider>
