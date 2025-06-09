@@ -2,6 +2,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { Navbar } from "@/components/navbar";
 import { UserProvider } from "@/context/user-context";
 import { QueryProvider } from "@/lib/query-client";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         >
           <UserProvider>
             <body className={`${space_grotesk.variable} font-sans antialiased`}>
+              <Navbar />
               {children}
             </body>
           </UserProvider>

@@ -57,7 +57,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logoutMutation = useMutation({
-    mutationFn: async () => fetchData("user/logout", "DELETE"),
+    mutationFn: async () => fetchData("auth/logout/", "POST"),
     onSuccess: () => {
       clearUser();
       queryClient.clear();

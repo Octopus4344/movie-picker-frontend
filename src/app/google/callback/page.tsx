@@ -73,7 +73,6 @@ export default function GoogleCallbackPage() {
       }
     >
       {" "}
-      {/* Use Spinner in fallback */}
       <GoogleCallbackComponent />
     </Suspense>
   );

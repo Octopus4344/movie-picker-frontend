@@ -131,3 +131,40 @@
     background-image: var(--gradient-primary);
   }
 }
+
+.fill-cursor-button {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease-in-out;
+  /* Define CSS variables for mouse position, with defaults */
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+.fill-cursor-button::before {
+  content: "";
+  position: absolute;
+  /* Use CSS variables for top and left */
+  top: var(--mouse-y);
+  left: var(--mouse-x);
+  width: 0;
+  height: 0;
+  background-color: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.3s ease-in-out,
+    height 0.3s ease-in-out;
+  z-index: 0;
+}
+
+.fill-cursor-button:hover::before {
+  width: 300%;
+  /* Increased size for better coverage from edges */
+  height: 300%;
+}
+
+.fill-cursor-button span {
+  position: relative;
+  z-index: 1;
+}
