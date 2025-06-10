@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
+import { MyReviews } from "@/components/my-reviews";
 import { ProtectedRoute } from "@/components/protected-route";
 
 export default function Home() {
@@ -53,10 +54,12 @@ export default function Home() {
             </span>
           </Link>
         </div>
-
-        <footer className="absolute right-0 bottom-0 left-0 p-4 text-center text-white">
-          <p className="text-sm">Made with ❤️ by Duchy Lakomczuchy</p>
-        </footer>
+        <div className="mx-10 mt-[450px] flex flex-col justify-center sm:mt-96 md:ml-[400px] lg:ml-[600px]">
+          <p className="text-2xl font-semibold text-white">
+            Your recent reviews
+          </p>
+          <MyReviews />
+        </div>
       </div>
     </ProtectedRoute>
   );

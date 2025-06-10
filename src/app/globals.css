@@ -123,6 +123,10 @@
 
   body {
     @apply text-foreground bg-white font-sans;
+
+    svg.star-svg {
+      display: inline;
+    }
   }
 }
 
