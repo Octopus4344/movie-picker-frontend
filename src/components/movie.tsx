@@ -3,6 +3,8 @@ import { Rating } from "react-simple-star-rating";
 
 import { Movie, MovieDetails } from "@/lib/types";
 
+import { ReviewDialog } from "./review-dialog";
+
 export const MovieTile = ({
   movie,
   review,
@@ -25,7 +27,11 @@ export const MovieTile = ({
           {" "}
           <div>
             {" "}
-            <p className="truncate text-lg font-semibold" title={movie.title}>
+            {/* Apply group-hover utilities to change text behavior */}
+            <p
+              className="truncate text-lg font-semibold group-hover:text-pretty group-hover:whitespace-normal"
+              title={movie.title}
+            >
               {movie.title}
             </p>
             {review && (
@@ -40,8 +46,8 @@ export const MovieTile = ({
                 />
               </div>
             )}
+            {!review && <ReviewDialog movieId={movie.id} />}
           </div>
-          {/* Description - appears smoothly on hover as space becomes available */}
           <div className="mt-2 opacity-0 transition-opacity delay-150 duration-300 ease-in-out group-hover:opacity-100">
             <p
               className="text-xs leading-snug text-gray-300"

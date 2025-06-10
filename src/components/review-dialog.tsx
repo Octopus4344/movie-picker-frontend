@@ -16,131 +16,92 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@/context/user-context";
 import { fetchData } from "@/lib/api";
-import { Review } from "@/lib/types";
 
-export function ReviewDialog({ id }: { id: number }) {
+export function ReviewDialog({ movieId }: { movieId: number }) {
   const queryClient = useQueryClient();
   const { user } = useUser();
-  const [review, setReview] = useState<Review>({ grade: 0, recipeId: "" });
-  const [hasError, setHasError] = useState(false);
-  const [step, setStep] = useState(0);
+  const [rating, setRating] = useState<number>(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleNextStep = () => {
-    if (review.grade === 0) {
-      setHasError(true);
-      setStep(0);
-      return;
-    }
-    setStep(1);
-  };
-
-  const handleRating = (rate: number) => {
-    setReview((prev) => ({ ...prev, grade: rate }));
+  const handleRatingChange = (rate: number) => {
+    setRating(rate);
   };
 
   const mutation = useMutation({
-    mutationFn: async () => {
-      return await fetchData("reviews", "POST", {
-        body: JSON.stringify(review),
-      });
+    mutationFn: async (reviewData: { film: number; review: number }) => {
+      return await fetchData(
+        "movies/watched/",
+        "POST",
+        { body: JSON.stringify(reviewData) },
+        user?.access,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recipes"] });
-      setStep(0);
-      setReview((prev) => ({ ...prev, grade: 0 }));
+      queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["my-reviews"] });
+      setRating(0);
+      setIsDialogOpen(false);
+      alert("Review submitted successfully!");
     },
-    onError: (error) => {
-      alert(error.message || "Something went wrong");
+    onError: (error: Error) => {
+      alert(error.message || "Please try again.");
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    if (
-      (step === 1 && (!review.review || review.review === "")) ||
-      review.grade === 0
-    ) {
-      setHasError(true);
-      setStep(0);
-      setReview((prev) => ({ ...prev, grade: 0 }));
-      e.preventDefault();
+  const handleSubmit = () => {
+    if (rating === 0) {
+      alert("Please select a rating before submitting.");
       return;
     }
-    if (user?.id && id) {
-      setReview((prev) => ({
-        ...prev,
-        recipeId: id.toString(),
-        amatorId: user.amatorData?.id.toString(),
-      }));
+    if (!user) {
+      alert("You must be logged in to submit a review.");
+      return;
     }
-    mutation.mutate();
+    mutation.mutate({ film: movieId, review: rating });
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger>
-        <div className="flex w-full max-w-48 items-center justify-center space-x-4 rounded-lg bg-gray-500 p-4 text-white">
-          <p>Rate this recipe</p>
-        </div>
+    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" className="my-1.5 bg-transparent">
+          Rate this movie
+        </Button>
       </AlertDialogTrigger>
-
-      {step === 0 && !hasError && (
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Please rate this recipe</AlertDialogTitle>
-            <AlertDialogDescription>
-              <Rating onClick={handleRating} />
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handleSubmit}>
-              Confirm
-            </AlertDialogAction>
-            <Button onClick={handleNextStep}>Leave a review</Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      )}
-
-      {step === 1 && !hasError && (
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Please rate this recipe</AlertDialogTitle>
-            <AlertDialogDescription>
-              <Textarea
-                id={"review"}
-                name={"review"}
-                value={review.review}
-                required={true}
-                onChange={(e) =>
-                  setReview((prev) => ({ ...prev, review: e.target.value }))
-                }
-              />
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={handleSubmit}>
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      )}
-
-      {hasError && (
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              You haven&#39;t provided all necessary data!
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setHasError(false)}>
-              Go back
-            </AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      )}
+      <AlertDialogContent className="bg-neutral-600/30 p-10 backdrop-blur-[48.70px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-white">
+            Rate this movie
+          </AlertDialogTitle>
+          <AlertDialogDescription className="flex justify-center py-4">
+            <Rating
+              onClick={handleRatingChange}
+              initialValue={rating}
+              SVGstyle={{ display: "inline-block" }}
+              size={30}
+            />
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            className="cursor-pointer border-none bg-white outline-0"
+            onClick={() => {
+              setRating(0);
+              setIsDialogOpen(false);
+            }}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className="cursor-pointer bg-white text-black hover:bg-gray-100"
+            onClick={handleSubmit}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Submitting..." : "Confirm"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

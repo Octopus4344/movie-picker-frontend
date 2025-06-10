@@ -41,11 +41,11 @@ export default function RecommendationsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="bg-gradient-primary flex min-h-screen flex-col items-start justify-center overflow-hidden p-10 md:p-24">
-        <h1 className="fontlight mb-8 text-3xl text-white">
+      <div className="bg-gradient-primary flex min-h-screen flex-col items-start overflow-hidden px-10 md:p-24">
+        <h1 className="mb-8 pt-24 text-3xl font-light text-white">
           We have picked for you these movies
         </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-3">
           {data.recommendations.map((movie) => (
             <MovieTile key={movie.id} movie={movie} />
           ))}
