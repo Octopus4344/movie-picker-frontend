@@ -45,7 +45,7 @@ export default function Home() {
             What would you like to watch today?
           </p>
           <Link
-            href="/"
+            href="/quiz"
             ref={buttonRef}
             className="fill-cursor-button relative mt-8 inline-block max-w-36 overflow-hidden rounded border-1 border-white px-6 py-3 font-semibold text-white transition-colors duration-300 hover:text-black"
           >
