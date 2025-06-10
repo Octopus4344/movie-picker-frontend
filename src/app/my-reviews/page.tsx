@@ -7,25 +7,15 @@ import { ProtectedRoute } from "@/components/protected-route";
 import Spinner from "@/components/ui/spinner";
 import { useUser } from "@/context/user-context";
 import { fetchData } from "@/lib/api";
-import { MovieDetails } from "@/lib/types";
+import { Movie } from "@/lib/types";
 
-interface RecommendationsResponse {
-  message: string;
-  streaming_services: string[];
-  recommendations: MovieDetails[];
-}
-
-export default function RecommendationsPage() {
+export default function MyReviewsPage() {
   const { user } = useUser();
-  const { data, isLoading, isError } = useQuery<RecommendationsResponse>({
-    queryKey: ["my-recommendations"],
+
+  const { data, isLoading, isError } = useQuery<Movie[]>({
+    queryKey: ["my-reviews"],
     queryFn: async () => {
-      return await fetchData(
-        "movies/recommendations/",
-        "GET",
-        undefined,
-        user?.access,
-      );
+      return await fetchData("movies/watched/", "GET", undefined, user?.access);
     },
 
     enabled: !!user,
@@ -43,11 +33,13 @@ export default function RecommendationsPage() {
     <ProtectedRoute>
       <div className="bg-gradient-primary flex min-h-screen flex-col items-start overflow-hidden px-10 md:p-24">
         <h1 className="mb-8 pt-24 text-3xl font-light text-white">
-          We have picked for you these movies
+          Your reviews
         </h1>
         <div className="grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {data.recommendations.map((movie) => (
-            <MovieTile key={movie.id} movie={movie} />
+          {data.map((movie) => (
+            <div key={movie.id} className="flex-shrink-0">
+              <MovieTile movie={movie.film} review={movie.review} />
+            </div>
           ))}
         </div>
       </div>

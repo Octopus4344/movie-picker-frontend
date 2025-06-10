@@ -37,7 +37,6 @@ export default function QuizPage() {
       console.log("Quiz completed with movies:", movies);
       queryClient.invalidateQueries({ queryKey: ["my-recommendations"] });
       router.push("/recommendations"); // Redirect to results page
-      // Example: router.push('/quiz/results?movies=' + JSON.stringify(movies.map(m => m.id)));
     },
     onError: (error: any) => {
       alert(error.message || "Failed to submit answers. Please try again.");

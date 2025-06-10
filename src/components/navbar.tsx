@@ -37,7 +37,7 @@ export const Navbar = () => {
           <Link href="/" className="text-gray-300 hover:text-white">
             Home
           </Link>
-          <Link href="/about" className="text-gray-300 hover:text-white">
+          <Link href="/my-reviews" className="text-gray-300 hover:text-white">
             My Reviews
           </Link>
           <Link href="/my-profile" className="text-gray-300 hover:text-white">
@@ -71,7 +71,7 @@ export const Navbar = () => {
             <Link href="/" className="text-gray-300 hover:text-white">
               Home
             </Link>
-            <Link href="/about" className="text-gray-300 hover:text-white">
+            <Link href="/my-reviews" className="text-gray-300 hover:text-white">
               My Reviews
             </Link>
             <Link href="/my-profile" className="text-gray-300 hover:text-white">
