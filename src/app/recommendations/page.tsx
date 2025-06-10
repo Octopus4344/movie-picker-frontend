@@ -43,7 +43,7 @@ export default function RecommendationsPage() {
     <ProtectedRoute>
       <div className="bg-gradient-primary flex min-h-screen flex-col items-start overflow-hidden px-10 md:p-24">
         <h1 className="mb-8 pt-24 text-3xl font-light text-white">
-          We have picked for you these movies
+          {data.message || "Your Recommendations"}
         </h1>
         <div className="grid grid-cols-1 gap-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {data.recommendations.map((movie) => (
