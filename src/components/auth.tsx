@@ -36,7 +36,7 @@ export function Auth() {
       router.push("/");
     },
     onError: (error: any) => {
-      alert(error.message || "Login failed. Please try again.");
+      alert(error.message || "Please try again.");
     },
   });
 

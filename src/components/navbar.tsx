@@ -7,14 +7,7 @@ import { usePathname } from "next/navigation";
 
 import { useUser } from "@/context/user-context";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 export const Navbar = () => {
   const path = usePathname();
@@ -47,7 +40,7 @@ export const Navbar = () => {
           <Link href="/about" className="text-gray-300 hover:text-white">
             My Reviews
           </Link>
-          <Link href="/contact" className="text-gray-300 hover:text-white">
+          <Link href="/my-profile" className="text-gray-300 hover:text-white">
             My Profile
           </Link>
           <button
@@ -81,7 +74,7 @@ export const Navbar = () => {
             <Link href="/about" className="text-gray-300 hover:text-white">
               My Reviews
             </Link>
-            <Link href="/contact" className="text-gray-300 hover:text-white">
+            <Link href="/my-profile" className="text-gray-300 hover:text-white">
               My Profile
             </Link>
             <button

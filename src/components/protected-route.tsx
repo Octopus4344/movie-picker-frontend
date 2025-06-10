@@ -5,6 +5,8 @@ import { useEffect } from "react";
 
 import { useUser } from "@/context/user-context";
 
+import Spinner from "./ui/spinner";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -20,7 +22,11 @@ export function ProtectedRoute(props: Props) {
   }, [user, isLoading, router]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Spinner />
+      </div>
+    );
   }
 
   if (!user) {

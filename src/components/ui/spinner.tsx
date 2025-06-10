@@ -1,4 +1,3 @@
-// src/components/ui/spinner.tsx
 import React from "react";
 
 const Spinner = () => {

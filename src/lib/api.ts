@@ -4,8 +4,8 @@ export async function fetchData(
   endpoint: string,
   method: "POST" | "PUT" | "DELETE" | "GET" = "POST",
   options?: RequestInit,
-  apiURL?: string,
   token?: string | null,
+  apiURL?: string,
 ) {
   const url = apiURL ?? NEXT_PUBLIC_API_URL;
   const response = await fetch(`${url}/${endpoint}`, {
