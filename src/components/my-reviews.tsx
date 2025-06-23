@@ -30,7 +30,7 @@ export const MyReviews = () => {
   }
 
   return (
-    <div className="flex max-w-80 space-x-24 overflow-x-auto p-8 sm:max-w-96 lg:max-w-[550px]">
+    <div className="flex max-w-80 space-x-24 overflow-x-auto p-8 sm:max-w-96 lg:max-w-[550px] xl:max-w-[750px]">
       {data.map((movie) => (
         <div key={movie.id} className="flex-shrink-0">
           <MovieTile movie={movie.film} review={movie.review} />
